@@ -23,10 +23,20 @@
             <input type="text" id="destino" placeholder="Digite o endereço de destino...">
         </div>
 
+        <div class="form-group">
+            <label for="tipoCarga">Tipo de Carga / Veículo Necessário:</label>
+            <select id="tipoCarga">
+                <option value="pequena">Pequena (Moto / Caixa / Envelope)</option>
+                <option value="media" selected>Média (Carro / Fiorino / Utilitário)</option>
+                <option value="grande">Grande (Caminhão Baú / Carga Pesada)</option>
+            </select>
+        </div>
+
         <button id="calcularBtn">Calcular Frete e Rota</button>
 
         <div id="resultado" class="resultado hidden">
             <p><strong>Distância:</strong> <span id="distancia">-</span></p>
+            <p><strong>Tipo de Rota:</strong> <span id="tipoRota">-</span></p>
             <p><strong>Valor Estimado do Frete:</strong> <span id="valorFrete">-</span></p>
         </div>
 
