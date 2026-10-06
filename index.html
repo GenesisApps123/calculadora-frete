@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Frete</title>
+    <!-- Importando a fonte Baloo 2 do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Calculadora de Frete</h1>
+        
+        <div class="form-group">
+            <label for="origem">Endereço de Partida:</label>
+            <input type="text" id="origem" placeholder="Digite o endereço de origem...">
+        </div>
+
+        <div class="form-group">
+            <label for="destino">Endereço de Chegada:</label>
+            <input type="text" id="destino" placeholder="Digite o endereço de destino...">
+        </div>
+
+        <button id="calcularBtn">Calcular Frete e Rota</button>
+
+        <div id="resultado" class="resultado hidden">
+            <p><strong>Distância:</strong> <span id="distancia">-</span></p>
+            <p><strong>Valor Estimado do Frete:</strong> <span id="valorFrete">-</span></p>
+        </div>
+
+        <!-- Mapa do Google -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Script da API do Google Maps fornecido -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaQhII8MY7qBWP8QMv4fyHHUuZ-XG2t14&libraries=places"></script>
+    <script src="script.js"></script>
+</body>
+</html>
