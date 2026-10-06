@@ -43,17 +43,19 @@ label {
     color: #03989e;
 }
 
-input {
+input, select {
     width: 100%;
     padding: 12px;
     border: 2px solid #dbbf73;
     border-radius: 8px;
     font-size: 1rem;
     outline: none;
+    background-color: #ffffff;
+    color: #03989e;
     transition: border-color 0.3s;
 }
 
-input:focus {
+input:focus, select:focus {
     border-color: #03989e;
 }
 
@@ -85,7 +87,7 @@ button:active {
     background-color: #f9f6ef;
     border-left: 5px solid #dbbf73;
     border-radius: 4px;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
 .hidden {
