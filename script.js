@@ -20,6 +20,11 @@ function initMap() {
     new google.maps.places.Autocomplete(destinoInput);
 }
 
+// Variáveis globais para guardar o último cálculo e enviar ao WhatsApp
+let ultimaDistancia = "";
+let ultimoTipoRota = "";
+let ultimoValorFrete = "";
+
 document.getElementById("calcularBtn").addEventListener("click", () => {
     const origem = document.getElementById("origem").value;
     const destino = document.getElementById("destino").value;
@@ -42,34 +47,63 @@ document.getElementById("calcularBtn").addEventListener("click", () => {
 
             const distanciaMetros = result.routes[0].legs[0].distance.value;
             const distanciaKm = distanciaMetros / 1000;
-            const distanciaTexto = result.routes[0].legs[0].distance.text;
+            ultimaDistancia = result.routes[0].legs[0].distance.text;
 
-            // Regra de preço por distância:
-            // Até 30 km é considerado Urbano (Dentro da cidade) -> R$ 15,00/km
-            // Acima de 30 km é considerado Viagem (Entre cidades) -> R$ 7,00/km
+            // Regra de preço: Até 30 km = R$ 15,00/km (Urbano) | Acima de 30 km = R$ 7,00/km (Viagem)
             let valorPorKm = distanciaKm <= 30 ? 15.00 : 7.00;
-            let tipoRotaTexto = distanciaKm <= 30 ? "Urbano (Dentro da cidade)" : "Intermunicipal / Viagem";
+            ultimoTipoRota = distanciaKm <= 30 ? "Urbano (Dentro da cidade)" : "Intermunicipal / Viagem";
 
-            // Fator multiplicador de acordo com o tipo de carga escolhido
+            // Fator multiplicador de acordo com o tipo de carga
             let multiplicadorCarga = 1.0;
-            if (tipoCarga === "pequena") multiplicadorCarga = 0.8; // Desconto leve para cargas leves
-            if (tipoCarga === "grande") multiplicadorCarga = 1.3;  // Acréscimo para cargas grandes
+            if (tipoCarga.includes("Pequena")) multiplicadorCarga = 0.8;
+            if (tipoCarga.includes("Grande")) multiplicadorCarga = 1.3;
 
-            // Cálculo final do valor
             let valorTotal = (distanciaKm * valorPorKm) * multiplicadorCarga;
-
-            // Garantir um valor mínimo de taxa de saída (ex: R$ 30,00)
             if (valorTotal < 30.00) valorTotal = 30.00;
 
-            // Exibe os resultados na tela
-            document.getElementById("distancia").innerText = distanciaTexto;
-            document.getElementById("tipoRota").innerText = tipoRotaTexto;
-            document.getElementById("valorFrete").innerText = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            ultimoValorFrete = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // Exibe na tela
+            document.getElementById("distancia").innerText = ultimaDistancia;
+            document.getElementById("tipoRota").innerText = ultimoTipoRota;
+            document.getElementById("valorFrete").innerText = ultimoValorFrete;
             document.getElementById("resultado").classList.remove("hidden");
         } else {
             alert("Não foi possível calcular a rota. Verifique os endereços informados.");
         }
     });
+});
+
+// Ação do botão de WhatsApp
+document.getElementById("whatsappBtn").addEventListener("click", () => {
+    const origem = document.getElementById("origem").value;
+    const destino = document.getElementById("destino").value;
+    const tipoCarga = document.getElementById("tipoCarga").value;
+    const dataFrete = document.getElementById("dataFrete").value || "Não informada";
+    const horaFrete = document.getElementById("horaFrete").value || "Não informado";
+
+    // Formata a data para DD/MM/AAAA se preenchida
+    let dataFormatada = dataFrete;
+    if (dataFrete !== "Not specified" && dataFrete.includes("-")) {
+        const partes = dataFrete.split("-");
+        dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    const mensagem = 
+        `🚚 *SOLICITAÇÃO DE ORÇAMENTO - FRETEFÁCIL* 🚚\n\n` +
+        `📍 *Origem:* ${origem}\n` +
+        `🎯 *Destino:* ${destino}\n` +
+        `📦 *Carga:* ${tipoCarga}\n` +
+        `📅 *Data Desejada:* ${dataFormatada}\n` +
+        `⏰ *Horário:* ${horaFrete}\n` +
+        `📏 *Distância:* ${ultimaDistancia}\n` +
+        `💰 *Valor Estimado:* ${ultimoValorFrete}\n\n` +
+        `Gostaria de confirmar este frete!`;
+
+    const telefone = "5588993082035";
+    const urlWhatsapp = `https://api.whatsapp.com/send?phone=${telefone}&text=${encodeURIComponent(mensagem)}`;
+    
+    window.open(urlWhatsapp, '_blank');
 });
 
 window.onload = initMap;
