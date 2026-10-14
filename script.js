@@ -2,7 +2,7 @@ let map;
 let directionsService;
 let directionsRenderer;
 
-// Coordenadas centrais aproximadas de Várzea Alegre - CE para viabilizar busca rápida e precisa
+// Coordenadas centrais aproximadas de Várzea Alegre - CE
 const VARZEA_ALEGRE_LATLNG = { lat: -6.7943, lng: -39.2982 };
 
 function initMap() {
@@ -19,10 +19,8 @@ function initMap() {
     const origemInput = document.getElementById("origem");
     const destinoInput = document.getElementById("destino");
 
-    // Definindo limites geográficos restritos ao Brasil e viés para Várzea Alegre/CE
     const options = {
         componentRestrictions: { country: "br" },
-        // Cria uma caixa delimitadora ao redor de Várzea Alegre para priorizar sugestões locais
         bounds: new google.maps.LatLngBounds(
             { lat: -6.9000, lng: -39.4000 },
             { lat: -6.6500, lng: -39.1500 }
@@ -30,16 +28,14 @@ function initMap() {
         strictBounds: false
     };
 
-    const autocompleteOrigem = new google.maps.places.Autocomplete(origemInput, options);
-    const autocompleteDestino = new google.maps.places.Autocomplete(destinoInput, options);
+    new google.maps.places.Autocomplete(origemInput, options);
+    new google.maps.places.Autocomplete(destinoInput, options);
 
-    // Se o campo de origem estiver vazio ao carregar, sugere automaticamente Várzea Alegre - CE
     if (!origemInput.value) {
         origemInput.value = "Várzea Alegre - CE";
     }
 }
 
-// Variáveis globais para guardar o último cálculo e enviar ao WhatsApp
 let ultimaDistancia = "";
 let ultimoTipoRota = "";
 let ultimoValorFrete = "";
@@ -70,27 +66,26 @@ document.getElementById("calcularBtn").addEventListener("click", () => {
             const distanciaKm = distanciaMetros / 1000;
             ultimaDistancia = result.routes[0].legs[0].distance.text;
 
-            // Novas regras de preço solicitadas:
-            // Até 30 km = R$ 15,00/km (Urbano) | Fora da cidade (> 30 km) = R$ 10,00/km
-            let valorPorKm = distanciaKm <= 30 ? 15.00 : 10.00;
-            ultimoTipoRota = distanciaKm <= 30 ? "Urbano (Várzea Alegre / Cidade)" : "Fora da cidade / Viagem";
+            // 1. Taxa mínima base obrigatória
+            let taxaMinimaBase = 39.90;
 
-            // Fator multiplicador de acordo com o tipo de carga
-            let multiplicadorCarga = 1.0;
-            if (tipoCarga.includes("Pequena")) multiplicadorCarga = 0.8;
-            if (tipoCarga.includes("Grande")) multiplicadorCarga = 1.3;
-
-            // Custo dos ajudantes (R$ 25,00 cada)
-            const custoAjudantes = numAjudantes * 25.00;
-            qtdAjudantesTexto = numAjudantes === 0 ? "Sem ajudantes (Morador carrega)" : `${numAjudantes} Ajudante(s) (R$ ${custoAjudantes.toFixed(2)})`;
-
-            // Cálculo base por km + carga + ajudantes
-            let valorTotal = ((distanciaKm * valorPorKm) * multiplicadorCarga) + custoAjudantes;
-
-            // Novo valor mínimo do frete: R$ 39,90
-            if (valorTotal < 39.90) {
-                valorTotal = 39.90 + custoAjudantes; // garante o mínimo da viagem + ajudantes se houver
+            // 2. Cálculo por distância caso saia do perímetro urbano de Várzea Alegre (rotas acima de 15 km)
+            let custoKmFora = 0;
+            if (distanciaKm > 15) {
+                custoKmFora = distanciaKm * 10.00; // R$ 10,00 por km rodado
+                ultimoTipoRota = "Fora da cidade / Intermunicipal";
+            } else {
+                ultimoTipoRota = "Urbano (Dentro de Várzea Alegre)";
             }
+
+            // 3. Adicional de ajudantes (R$ 25,00 por ajudante)
+            const custoAjudantes = numAjudantes * 25.00;
+            qtdAjudantesTexto = numAjudantes === 0 
+                ? "Sem ajudantes (Morador carrega)" 
+                : `${numAjudantes} Ajudante(s) (+ R$ ${custoAjudantes.toFixed(2)})`;
+
+            // VALOR TOTAL = Taxa Mínima + (Km fora x R$ 10) + Ajudantes
+            let valorTotal = taxaMinimaBase + custoKmFora + custoAjudantes;
 
             ultimoValorFrete = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -101,12 +96,12 @@ document.getElementById("calcularBtn").addEventListener("click", () => {
             document.getElementById("valorFrete").innerText = ultimoValorFrete;
             document.getElementById("resultado").classList.remove("hidden");
         } else {
-            alert("Não foi possível calcular a rota. Verifique se os endereços existem ou tente especificar o bairro/cidade.");
+            alert("Não foi possível calcular a rota. Verifique os endereços digitados.");
         }
     });
 });
 
-// Ação do botão de WhatsApp para o número 88993082035 (DDI 55 + DDD 88 + 993082035)
+// Envio para o WhatsApp
 document.getElementById("whatsappBtn").addEventListener("click", () => {
     const origem = document.getElementById("origem").value;
     const destino = document.getElementById("destino").value;
