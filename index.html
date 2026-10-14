@@ -18,21 +18,32 @@
         
         <div class="form-group">
             <label for="origem">Endereço de Partida:</label>
-            <input type="text" id="origem" placeholder="Digite o endereço de origem...">
+            <input type="text" id="origem" placeholder="Digite o endereço em Várzea Alegre...">
         </div>
 
         <div class="form-group">
             <label for="destino">Endereço de Chegada:</label>
-            <input type="text" id="destino" placeholder="Digite o endereço de destino...">
+            <input type="text" id="destino" placeholder="Digite o destino (rua, bairro, cidade)...">
         </div>
 
-        <div class="form-group">
-            <label for="tipoCarga">Tipo de Carga / Veículo Necessário:</label>
-            <select id="tipoCarga">
-                <option value="Pequena (Moto / Caixa / Envelope)">Pequena (Moto / Caixa / Envelope)</option>
-                <option value="Média (Carro / Fiorino / Utilitário)" selected>Média (Carro / Fiorino / Utilitário)</option>
-                <option value="Grande (Caminhão Baú / Carga Pesada)">Grande (Caminhão Baú / Carga Pesada)</option>
-            </select>
+        <div class="form-row">
+            <div class="form-group half">
+                <label for="tipoCarga">Tipo de Carga:</label>
+                <select id="tipoCarga">
+                    <option value="Pequena (Moto / Caixa / Envelope)">Pequena</option>
+                    <option value="Média (Carro / Fiorino / Utilitário)" selected>Média (Utilitário)</option>
+                    <option value="Grande (Caminhão Baú / Carga Pesada)">Grande (Caminhão)</option>
+                </select>
+            </div>
+            <div class="form-group half">
+                <label for="ajudantes">Ajudantes:</label>
+                <select id="ajudantes">
+                    <option value="0" selected>Sem Ajudantes (Morador carrega)</option>
+                    <option value="1">1 Ajudante (+ R$ 25,00)</option>
+                    <option value="2">2 Ajudantes (+ R$ 50,00)</option>
+                    <option value="3">3 Ajudantes (+ R$ 75,00)</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-row">
@@ -51,6 +62,7 @@
         <div id="resultado" class="resultado hidden">
             <p><strong>Distância:</strong> <span id="distancia">-</span></p>
             <p><strong>Tipo de Rota:</strong> <span id="tipoRota">-</span></p>
+            <p><strong>Ajudantes:</strong> <span id="resAjudantes">-</span></p>
             <p><strong>Valor Estimado do Frete:</strong> <span id="valorFrete">-</span></p>
             
             <!-- Botão de Envio para o WhatsApp -->
@@ -66,7 +78,7 @@
         <div id="map"></div>
     </div>
 
-    <!-- Script da API do Google Maps fornecido -->
+    <!-- Script da API do Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaQhII8MY7qBWP8QMv4fyHHUuZ-XG2t14&libraries=places"></script>
     <script src="script.js"></script>
 </body>
