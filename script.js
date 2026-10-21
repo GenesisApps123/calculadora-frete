@@ -69,10 +69,10 @@ document.getElementById("calcularBtn").addEventListener("click", () => {
             // 1. Taxa mínima base obrigatória
             let taxaMinimaBase = 39.90;
 
-            // 2. Cálculo por distância caso saia do perímetro urbano de Várzea Alegre (rotas acima de 15 km)
+            // 2. Cálculo por distância fora do perímetro urbano (rotas acima de 15 km)
             let custoKmFora = 0;
             if (distanciaKm > 15) {
-                custoKmFora = distanciaKm * 10.00; // R$ 10,00 por km rodado
+                custoKmFora = distanciaKm * 6.67; // R$ 6,67 por km rodado
                 ultimoTipoRota = "Fora da cidade / Intermunicipal";
             } else {
                 ultimoTipoRota = "Urbano (Dentro de Várzea Alegre)";
@@ -84,7 +84,7 @@ document.getElementById("calcularBtn").addEventListener("click", () => {
                 ? "Sem ajudantes (Morador carrega)" 
                 : `${numAjudantes} Ajudante(s) (+ R$ ${custoAjudantes.toFixed(2)})`;
 
-            // VALOR TOTAL = Taxa Mínima + (Km fora x R$ 10) + Ajudantes
+            // VALOR TOTAL = Taxa Mínima (39,90) + (Km fora x R$ 6,67) + Ajudantes
             let valorTotal = taxaMinimaBase + custoKmFora + custoAjudantes;
 
             ultimoValorFrete = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
